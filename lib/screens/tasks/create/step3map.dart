@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../create/step4.dart';
+import 'package:location/location.dart';
 
 class CreateTaskScreen3Map extends StatefulWidget {
   final int serviceId;
@@ -21,9 +23,14 @@ class _CreateTaskScreen3MapState extends State<CreateTaskScreen3Map> {
   Completer<GoogleMapController> _controller = Completer();
   final TextEditingController _addressController = TextEditingController();
   bool isRemote = false;
+  var currentLocation;
+  var location = new Location();
+  double coorLat;
+  double coorLong;
+  GoogleMap _map;
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(41.3191816, 69.2965543),
     zoom: 14.4746,
   );
 
@@ -40,6 +47,35 @@ class _CreateTaskScreen3MapState extends State<CreateTaskScreen3Map> {
         ),
       ),
     );
+  }
+
+  _findLocation() async {
+    try {
+      currentLocation = await location.getLocation();
+      print(currentLocation.latitude);
+      print(currentLocation.longitude);
+      coorLat = currentLocation.latitude;
+      coorLong = currentLocation.longitude;
+      final GoogleMapController controller = await _controller.future;
+      controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(coorLat, coorLong), zoom: 14.4),
+        ),
+      );
+      setState(() {
+        _map.markers.add(Marker(
+          position: LatLng(
+            coorLat,
+            coorLong,
+          ),
+          draggable: true,
+          markerId: MarkerId('suka'),
+        ));
+      });
+    } catch (e) {
+      print(e);
+      currentLocation = null;
+    }
   }
 
   @override
@@ -64,9 +100,8 @@ class _CreateTaskScreen3MapState extends State<CreateTaskScreen3Map> {
           children: <Widget>[
             Expanded(
               child: Container(
-                child: GoogleMap(
+                child: _map = GoogleMap(
                   mapToolbarEnabled: true,
-                  myLocationButtonEnabled: true,
                   myLocationEnabled: true,
                   mapType: MapType.normal,
                   initialCameraPosition: _kGooglePlex,
@@ -76,22 +111,15 @@ class _CreateTaskScreen3MapState extends State<CreateTaskScreen3Map> {
                 ),
               ),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 50,
-              child: FlatButton(
-                color: Color(0xFFFF4C00),
-                textColor: Colors.white,
-                onPressed: _nextScreen,
-                child: Text(
-                  'Далее',
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFFFF4C00),
+        onPressed: _findLocation,
+        child: Icon(
+          Icons.my_location,
+          color: Colors.white,
         ),
       ),
     );

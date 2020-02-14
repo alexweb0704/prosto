@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'introduction_screen.dart';
 import 'package:localstorage/localstorage.dart';
+
 class LangScreen extends StatefulWidget {
   @override
   _LangScreenState createState() => _LangScreenState();
@@ -17,27 +18,9 @@ class _LangScreenState extends State<LangScreen> {
           margin: EdgeInsets.only(top: 30),
           child: Column(
             children: <Widget>[
-              Hero(
-                tag: 'tag1',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'PRO',
-                      style: TextStyle(
-                        color: Colors.teal,
-                        fontSize: 50,
-                      ),
-                    ),
-                    Text(
-                      'sto',
-                      style: TextStyle(
-                        color: Color(0xFFFF4C00),
-                        fontSize: 50,
-                      ),
-                    ),
-                  ],
-                ),
+              Image.asset(
+                'assets/icons/logo.png',
+                height: 33,
               ),
               SizedBox(
                 height: 40,
@@ -63,7 +46,7 @@ class _LangScreenState extends State<LangScreen> {
                 child: RaisedButton(
                   textColor: Colors.white,
                   onPressed: () async {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => IntroductionScreen(),

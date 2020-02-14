@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:prosto/helpers/locale_storage_helper.dart';
+import 'package:prosto/models/user.dart';
+import 'package:prosto/screens/profile/profile_screen.dart';
+import '../screens/tasks/create/step1.dart';
+import '../screens/tasks/find/find_task.dart';
 
 class ProstoDrawer extends StatefulWidget {
   @override
@@ -6,6 +11,12 @@ class ProstoDrawer extends StatefulWidget {
 }
 
 class _ProstoDrawerState extends State<ProstoDrawer> {
+  Future<User> currentUser = LStorage.getUser();
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -26,27 +37,53 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                       child: Container(
                         child: Column(
                           children: <Widget>[
-                            Stack(
-                              children: <Widget>[
-                                Image.asset(
-                                  'assets/icons/user.png',
-                                ),
-                                Positioned(
-                                  top: 38,
-                                  right: 38,
-                                  bottom: 38,
-                                  left: 38,
-                                  child: Image.asset(
-                                    'assets/icons/save.png',
-                                  ),
-                                ),
-                              ],
+                            FutureBuilder(
+                              future: currentUser,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  var user = snapshot.data;
+                                  print(user.avatarUrl);
+                                  return Stack(
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/icons/user.png',
+                                        height: 192,
+                                      ),
+                                      user.avatarUrl != null
+                                          ? Positioned(
+                                              top: 42,
+                                              right: 38,
+                                              bottom: 38,
+                                              left: 42,
+                                              child: CircleAvatar(
+                                                radius: 500,
+                                                backgroundColor: Colors.white,
+                                                backgroundImage: NetworkImage(
+                                                    user.avatarUrl),
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                    ],
+                                  );
+                                }
+                                return CircularProgressIndicator();
+                              },
                             ),
-                            Text(
-                              'Sasha Raimov Doniyor o\'g\'li',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            FutureBuilder(
+                              future: currentUser,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  var user = snapshot.data;
+                                  return Text(
+                                    user.name != null ? user.name : '',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w400),
+                                  );
+                                }
+                                return Text('     ');
+                              },
                             ),
                             SizedBox(
                               height: 5,
@@ -54,7 +91,7 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                             SizedBox(
                               height: 1,
                               child: Container(
-                                color: Color(0xFFFF4C00),
+                                color: Color(0xFF68BB49),
                               ),
                             ),
                             Row(
@@ -71,13 +108,13 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                                       'Пополнить счет',
                                       style: TextStyle(
                                         fontSize: 18.0,
-                                        color: Color(0xFFFF4C00),
+                                        color: Color(0xFF68BB49),
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
                                   ),
-                                  splashColor: Color(0x66FF4C00),
-                                  highlightColor: Color(0x55FF4C00),
+                                  splashColor: Color(0x6668BB49),
+                                  highlightColor: Color(0x5568BB49),
                                 ),
                               ],
                             ),
@@ -87,7 +124,14 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileScreen(),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20.0,
@@ -100,11 +144,18 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateTaskScreen1(),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20.0,
@@ -117,11 +168,18 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FindTaskScreen(),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20.0,
@@ -134,8 +192,8 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
                     onTap: () {},
@@ -151,8 +209,8 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
                     onTap: () {},
@@ -168,8 +226,8 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
                     onTap: () {},
@@ -185,8 +243,8 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                         ),
                       ),
                     ),
-                    splashColor: Color(0x66FF4C00),
-                    highlightColor: Color(0x55FF4C00),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
                   ),
                 ],
               ),
@@ -206,11 +264,11 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                   ),
                 ),
               ),
-              splashColor: Color(0x66FF4C00),
-              highlightColor: Color(0x55FF4C00),
+              splashColor: Color(0x6668BB49),
+              highlightColor: Color(0x5568BB49),
             ),
             Container(
-              color: Color(0xFFFF4C00),
+              color: Color(0xFF68BB49),
               padding: EdgeInsets.all(20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -222,12 +280,21 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                       fontSize: 20.0,
                     ),
                   ),
-                  Text(
-                    '100 000 000\$',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                    ),
+                  FutureBuilder(
+                    future: currentUser,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var user = snapshot.data;
+                        return Text(
+                          '${user.balance != null ? user.balance : 0} \$',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        );
+                      }
+                      return CircularProgressIndicator();
+                    },
                   ),
                 ],
               ),

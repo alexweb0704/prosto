@@ -1,5 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:prosto/helpers/http_helper.dart';
+import 'package:prosto/helpers/locale_storage_helper.dart';
+import 'package:prosto/models/user.dart';
+import 'package:prosto/screens/home_screen.dart';
+import 'package:prosto/screens/login_screen.dart';
+import 'package:prosto/screens/profile/profile_edit_screen.dart';
 import '../screens/lang_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -11,11 +17,35 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () {
+    Timer(Duration(seconds: 1), () async {
+      User currentUser;
+      try {
+        currentUser = await HttpHelper.getUser(context);
+      } catch (e) {
+        currentUser = await LStorage.getUser();
+      }
+      if (currentUser == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ),
+        );
+        return null;
+      }
+      if (currentUser.name == null || currentUser.name == '') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileEditScreen(),
+          ),
+        );
+        return;
+      }
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LangScreen(),
+          builder: (context) => HomeScreen(),
         ),
       );
     });
@@ -27,25 +57,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'PRO',
-                  style: TextStyle(
-                    color: Colors.teal,
-                    fontSize: 50,
-                  ),
-                ),
-                Text(
-                  'sto',
-                  style: TextStyle(
-                    color: Color(0xFFFF4C00),
-                    fontSize: 50,
-                  ),
-                ),
-              ],
+            Center(
+              child: Image.asset(
+                'assets/icons/logo.png',
+                height: 33,
+              ),
             ),
             CircularProgressIndicator()
           ],

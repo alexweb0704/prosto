@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prosto/helpers/http_helper.dart';
 import '../screens/home_screen.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -13,11 +14,34 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final LocalStorage storage = new LocalStorage('prosto_app');
 
-  bool _isRequest = true;
+  bool _loading = false;
+  bool _isRequest = false;
   bool _isUsername = false;
   //bool _loading = false;
   String password;
   void _logining() async {
+    setState(() {
+      _loading = true;
+    });
+    print(_usernameController.text);
+    Map<String, String> operation = await HttpHelper.logining(
+      username: '+998' + _usernameController.text,
+      password: _passwordController.text,
+    );
+    setState(() {
+      _loading = false;
+    });
+    if (operation.containsKey('password')) {
+      setState(() {
+        _isUsername = true;
+        _passwordController.text = operation['password'];
+      });
+      print(operation['password']);
+      return;
+    }
+    if (operation.containsKey('error')) {
+      return;
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -26,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,27 +69,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 200,
                 height: 200,
               ),
-              Hero(
-                tag: 'tag1',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'PRO',
-                      style: TextStyle(
-                        color: Colors.teal,
-                        fontSize: 50,
-                      ),
-                    ),
-                    Text(
-                      'sto',
-                      style: TextStyle(
-                        color: Color(0xFFFF4C00),
-                        fontSize: 50,
-                      ),
-                    ),
-                  ],
-                ),
+              Image.asset(
+                'assets/icons/logo.png',
+                height: 33,
+              ),
+              SizedBox(
+                height: 10,
               ),
               Text(
                 'Войди',
@@ -100,7 +108,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       prefixText: '+998 ',
                       labelStyle: TextStyle(
                         fontSize: 20,
-                        color: Color(0xFFFF4C00),
                       ),
                       labelText: 'Телефон',
                     ),
@@ -124,7 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       hintText: '123456',
                       labelStyle: TextStyle(
                         fontSize: 20,
-                        color: Color(0xFFFF4C00),
                       ),
                       labelText: 'Код',
                     ),
@@ -138,9 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 50,
                   child: FlatButton(
-                    color: Color(0xFFFF4C00),
+                    color: Color(0xFF68BB49),
                     textColor: Colors.white,
-                    onPressed: _isRequest ? _logining : null,
+                    onPressed: _isRequest && _loading == false ? _logining : null,
                     child: Text(
                       'Получить код',
                       style: TextStyle(
@@ -154,9 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 50,
                   child: FlatButton(
-                    color: Color(0xFFFF4C00),
+                    color: Color(0xFF68BB49),
                     textColor: Colors.white,
-                    onPressed: _isRequest ? _logining : null,
+                    onPressed: _isRequest && _loading == false ? _logining : null,
                     child: Text(
                       'Войти',
                       style: TextStyle(

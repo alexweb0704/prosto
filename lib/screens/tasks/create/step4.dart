@@ -8,12 +8,16 @@ class CreateTaskScreen4 extends StatefulWidget {
   final String description;
   final bool isRemote;
   final String address;
+  final double coorLat;
+  final double coorLong;
   CreateTaskScreen4({
     this.serviceId,
     this.title,
     this.description,
     this.isRemote,
     this.address,
+    this.coorLat,
+    this.coorLong,
   });
   @override
   _CreateTaskScreen4State createState() => _CreateTaskScreen4State();
@@ -34,7 +38,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData(
-            primaryColor: Color(0xffff4c00),
+            primaryColor: Color(0xFF68BB49),
             accentColor: Color(0xff00ae68),
           ),
           child: child,
@@ -64,7 +68,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData(
-            primaryColor: Color(0xffff4c00),
+            primaryColor: Color(0xFF68BB49),
             accentColor: Color(0xff00ae68),
           ),
           child: child,
@@ -85,9 +89,9 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
 
   _nextScreen() {
     DateTime startedAt = DateTime.parse(startDate.toString().split(' ')[0] +
-        ' ${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute}');
+        ' ${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}');
     DateTime finishedAt = DateTime.parse(endDate.toString().split(' ')[0] +
-        ' ${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute}');
+        ' ${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}');
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -99,6 +103,8 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
           address: widget.address,
           startedAt: startedAt,
           finishedAt: finishedAt,
+          coorLat: widget.coorLat,
+          coorLong: widget.coorLong,
         ),
       ),
     );
@@ -113,7 +119,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
-          color: Color(0xFFFF4C00),
+          color: Color(0xFF68BB49),
         ),
         centerTitle: true,
         title: Text(
@@ -156,7 +162,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                         DateFormat('dd.MM.yyyy').format(startDate).toString(),
                         style: TextStyle(
                           fontSize: 20.0,
-                          color: Color(0xFFFF4C00),
+                          color: Color(0xFF68BB49),
                         ),
                       ),
                     ),
@@ -175,10 +181,10 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                       ),
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        '${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute}',
+                        '${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}',
                         style: TextStyle(
                           fontSize: 20.0,
-                          color: Color(0xFFFF4C00),
+                          color: Color(0xFF68BB49),
                         ),
                       ),
                     ),
@@ -218,7 +224,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                         DateFormat('dd.MM.yyyy').format(endDate).toString(),
                         style: TextStyle(
                           fontSize: 20.0,
-                          color: Color(0xFFFF4C00),
+                          color: Color(0xFF68BB49),
                         ),
                       ),
                     ),
@@ -237,10 +243,10 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                       ),
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        '${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute}',
+                        '${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}',
                         style: TextStyle(
                           fontSize: 20.0,
-                          color: Color(0xFFFF4C00),
+                          color: Color(0xFF68BB49),
                         ),
                       ),
                     ),
@@ -255,7 +261,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
               width: MediaQuery.of(context).size.width,
               height: 50,
               child: FlatButton(
-                color: Color(0xFFFF4C00),
+                color: Color(0xFF68BB49),
                 textColor: Colors.white,
                 onPressed: _nextScreen,
                 child: Text(

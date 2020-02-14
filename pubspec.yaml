@@ -25,6 +25,9 @@ dependencies:
   carousel_slider: ^1.4.1
   intl: ^0.16.1
   google_maps_flutter: ^0.5.21+12
+  location: ^2.3.5
+  image_picker: ^0.6.3+1
+  #yandex_mapkit: ^0.3.5
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -53,6 +56,7 @@ flutter:
    - assets/icons/cost.png
    - assets/icons/user.png
    - assets/icons/user-check.png
+   - assets/icons/logo.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

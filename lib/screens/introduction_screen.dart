@@ -43,27 +43,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Hero(
-                tag: 'tag1',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'PRO',
-                      style: TextStyle(
-                        color: Colors.teal,
-                        fontSize: 50,
-                      ),
-                    ),
-                    Text(
-                      'sto',
-                      style: TextStyle(
-                        color: Color(0xFFFF4C00),
-                        fontSize: 50,
-                      ),
-                    ),
-                  ],
-                ),
+              Image.asset(
+                'assets/icons/logo.png',
+                height: 33,
               ),
               Container(
                 height: 300,
@@ -156,7 +138,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 child: RaisedButton(
                   textColor: Colors.white,
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => LoginScreen(),

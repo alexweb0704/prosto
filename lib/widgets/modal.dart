@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ModalWidget extends StatefulWidget {
+  final Future request;
+  ModalWidget({
+    this.request,
+  });
   @override
   _ModalWidgetState createState() => _ModalWidgetState();
 }
@@ -25,7 +29,7 @@ class _ModalWidgetState extends State<ModalWidget> {
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Задание созданно',
+                  'Создание задания',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.0,
@@ -43,10 +47,35 @@ class _ModalWidgetState extends State<ModalWidget> {
             Expanded(
               child: Container(
                 color: Color(0xFFFFFFFF),
-                child: ListView(
-                  children: <Widget>[
-                    Text('kuku'),
-                  ],
+                child: FutureBuilder(
+                  future: widget.request,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView(
+                        children: <Widget>[
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text('Ваше задание создано.'),
+                            ),
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text('Номер задания: №1'),
+                            ),
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text('Дата создания: 01.02.2020'),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return CircularProgressIndicator();
+                  },
                 ),
               ),
             ),

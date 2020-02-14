@@ -37,7 +37,7 @@ class _CreateTaskScreen2State extends State<CreateTaskScreen2> {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
-          color: Color(0xFFFF4C00),
+          color: Color(0xFF68BB49),
         ),
         centerTitle: true,
         title: Text(
@@ -60,7 +60,7 @@ class _CreateTaskScreen2State extends State<CreateTaskScreen2> {
                   hintText: 'Добавьте описание задачи',
                   labelStyle: TextStyle(
                     fontSize: 20,
-                    color: Color(0xFFFF4C00),
+                    color: Color(0xFF68BB49),
                   ),
                 ),
               ),
@@ -79,7 +79,7 @@ class _CreateTaskScreen2State extends State<CreateTaskScreen2> {
                   hintText: 'Добавьте детали задачи',
                   labelStyle: TextStyle(
                     fontSize: 20,
-                    color: Color(0xFFFF4C00),
+                    color: Color(0xFF68BB49),
                   ),
                 ),
               ),
@@ -91,7 +91,7 @@ class _CreateTaskScreen2State extends State<CreateTaskScreen2> {
               width: MediaQuery.of(context).size.width,
               height: 50,
               child: FlatButton(
-                color: Color(0xFFFF4C00),
+                color: Color(0xFF68BB49),
                 textColor: Colors.white,
                 onPressed: _nextScreen,
                 child: Text(

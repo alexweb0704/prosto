@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../helpers/http_helper.dart';
-import '../../../models/service.dart';
-import '../create/step2.dart';
+import 'package:prosto/helpers/http_helper.dart';
+import 'package:prosto/models/service.dart';
 
-class CreateTaskScreen1 extends StatefulWidget {
+class ServicesSelectScreen extends StatefulWidget {
+  final List<Service> selectedServices;
+  ServicesSelectScreen(this.selectedServices);
   @override
-  _CreateTaskScreen1State createState() => _CreateTaskScreen1State();
+  _ServicesSelectScreenState createState() => _ServicesSelectScreenState();
 }
 
-class _CreateTaskScreen1State extends State<CreateTaskScreen1> {
+class _ServicesSelectScreenState extends State<ServicesSelectScreen> {
   Future<List<Service>> futureServices;
+  List<Service> selectedServices = List();
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,6 @@ class _CreateTaskScreen1State extends State<CreateTaskScreen1> {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
-          color: Color(0xFF68BB49),
         ),
         centerTitle: true,
         title: Text(
@@ -43,30 +44,31 @@ class _CreateTaskScreen1State extends State<CreateTaskScreen1> {
             if (snapshot.connectionState == ConnectionState.done) {
               var services = snapshot.data;
               return ListView.builder(
-                  itemCount: snapshot.data.length,
+                  itemCount: services.length,
                   itemBuilder: (context, index) {
-                    return new Card(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 2,
-                        horizontal: 10,
-                      ),
-                      child: InkWell(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12.0,
-                            horizontal: 20.0,
-                          ),
-                          child: Text(
-                            services[index].name,
-                            style: TextStyle(
-                              fontSize: 18.0,
-                            ),
+                    bool selected = false;
+                    selectedServices.forEach((item) {
+                      if (item.id == services[index].id) {
+                        setState(() {
+                          selected = true;
+                        });
+                      }
+                    });
+                    return Card(
+                      color: selected ? Theme.of(context).accentColor : null,
+                      child: new ListTile(
+                        dense: true,
+                        title: Text(
+                          services[index].name,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: selected ? Colors.white : null,
                           ),
                         ),
-                        splashColor: Color(0x6668BB49),
-                        highlightColor: Color(0x5568BB49),
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateTaskScreen2(serviceId: services[index].id)),);
+                          setState(() {
+                            selectedServices.add(services[index]);
+                          });
                         },
                       ),
                     );

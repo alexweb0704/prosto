@@ -19,23 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Container(
           height: 50,
           width: 136,
-          child: Row(
-            children: <Widget>[
-              Text(
-                'PRO',
-                style: TextStyle(
-                  color: Color(0xFF00AE68),
-                  fontSize: 40,
-                ),
-              ),
-              Text(
-                'sto',
-                style: TextStyle(
-                  color: Color(0xFFFF4C00),
-                  fontSize: 40,
-                ),
-              ),
-            ],
+          child: Image.asset(
+            'assets/icons/logo.png',
+            height: 33,
           ),
         ),
       ),

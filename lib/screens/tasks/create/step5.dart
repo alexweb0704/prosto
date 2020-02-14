@@ -11,6 +11,8 @@ class CreateTaskScreen5 extends StatefulWidget {
   final String address;
   final DateTime startedAt;
   final DateTime finishedAt;
+  final double coorLat;
+  final double coorLong;
   CreateTaskScreen5({
     this.serviceId,
     this.title,
@@ -19,6 +21,8 @@ class CreateTaskScreen5 extends StatefulWidget {
     this.address,
     this.startedAt,
     this.finishedAt,
+    this.coorLat,
+    this.coorLong,
   });
   @override
   _CreateTaskScreen5State createState() => _CreateTaskScreen5State();
@@ -29,7 +33,7 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
   final TextEditingController _priceController = TextEditingController();
   PaymentType _selected;
   int _price = 0;
-
+  Map<String, dynamic> _task;
   _createTask() {
     if (_selected != null) {
       print(widget.serviceId);
@@ -41,9 +45,22 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
       print(widget.finishedAt);
       print(_price);
       print(_selected.id);
+      _task = {
+        "title": widget.title,
+        "description": widget.description,
+        "service_id": widget.serviceId,
+        "is_remote": widget.isRemote,
+        "address": widget.address,
+        "started_at": widget.startedAt,
+        "finished_at": widget.finishedAt,
+        "price": _price,
+        "payment_type_id": _selected.id,
+      };
       showDialog(
         context: context,
-        builder: (BuildContext context) => ModalWidget(),
+        builder: (BuildContext context) => ModalWidget(
+          request: HttpHelper.createTask(_task, context),
+        ),
       );
     }
   }
@@ -57,7 +74,7 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
             Navigator.pop(context);
           },
           icon: Icon(Icons.arrow_back_ios),
-          color: Color(0xFFFF4C00),
+          color: Color(0xFF68BB49),
         ),
         centerTitle: true,
         title: Text(
@@ -87,7 +104,7 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
                   labelText: 'Сумма',
                   labelStyle: TextStyle(
                     fontSize: 18.0,
-                    color: Color(0xFFFF4C00),
+                    color: Color(0xFF68BB49),
                   ),
                 ),
               ),
@@ -128,11 +145,11 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
                         },
                         hint: Text('Выберите форму оплаты'),
                         style: TextStyle(
-                          color: Color(0xFFFF4C00),
+                          color: Color(0xFF68BB49),
                           fontSize: 18.0,
                         ),
                         icon: Icon(Icons.keyboard_arrow_down),
-                        iconEnabledColor: Color(0xFFFF4C00),
+                        iconEnabledColor: Color(0xFF68BB49),
                       ),
                     ),
                   );
@@ -148,7 +165,7 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
               width: MediaQuery.of(context).size.width,
               height: 50,
               child: FlatButton(
-                color: Color(0xFFFF4C00),
+                color: Color(0xFF68BB49),
                 textColor: Colors.white,
                 onPressed: _price != 0 && _price >= 1000 && _selected != null
                     ? _createTask
