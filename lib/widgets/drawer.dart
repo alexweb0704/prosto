@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prosto/helpers/locale_storage_helper.dart';
 import 'package:prosto/models/user.dart';
+import 'package:prosto/screens/my_wallet_screen.dart';
 import 'package:prosto/screens/profile/profile_screen.dart';
 import '../screens/tasks/create/step1.dart';
 import '../screens/tasks/find/find_task.dart';
@@ -230,7 +231,14 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                     highlightColor: Color(0x5568BB49),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyWalletScreen(),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20.0,

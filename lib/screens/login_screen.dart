@@ -139,38 +139,39 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 30,
               ),
-              if (_isUsername == false)
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  child: FlatButton(
-                    color: Color(0xFF68BB49),
-                    textColor: Colors.white,
-                    onPressed: _isRequest && _loading == false ? _logining : null,
-                    child: Text(
-                      'Получить код',
-                      style: TextStyle(
-                        fontSize: 20,
+              _isUsername == false
+                  ? Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      child: FlatButton(
+                        color: Color(0xFF68BB49),
+                        textColor: Colors.white,
+                        onPressed:
+                            _isRequest && _loading == false ? _logining : null,
+                        child: Text(
+                          'Получить код',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      child: FlatButton(
+                        color: Color(0xFF68BB49),
+                        textColor: Colors.white,
+                        onPressed:
+                            _isRequest && _loading == false ? _logining : null,
+                        child: Text(
+                          'Войти',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                )
-              else
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50,
-                  child: FlatButton(
-                    color: Color(0xFF68BB49),
-                    textColor: Colors.white,
-                    onPressed: _isRequest && _loading == false ? _logining : null,
-                    child: Text(
-                      'Войти',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ),
               SizedBox(
                 height:
                     MediaQuery.of(context).viewInsets.bottom == 0 ? 100 : null,
