@@ -112,53 +112,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 curve: Curves.easeInCubic,
                 duration: Duration(milliseconds: 200),
               ),
-              if (_isUsername == false)
-                Container(
-                  child: TextField(
-                    controller: _usernameController,
-                    maxLength: 9,
-                    keyboardType: TextInputType.phone,
-                    onChanged: (value) {
-                      setState(() {
-                        value.length == 9
-                            ? _isRequest = true
-                            : _isRequest = false;
-                      });
-                      print(value.length);
-                    },
-                    decoration: InputDecoration(
-                      hintText: '91 234 56 78',
-                      prefixText: '+998 ',
-                      labelStyle: TextStyle(
-                        fontSize: 20,
+              _isUsername == false
+                  ? Container(
+                      child: TextField(
+                        controller: _usernameController,
+                        maxLength: 9,
+                        keyboardType: TextInputType.phone,
+                        onChanged: (value) {
+                          setState(() {
+                            value.length == 9
+                                ? _isRequest = true
+                                : _isRequest = false;
+                          });
+                          print(value.length);
+                        },
+                        decoration: InputDecoration(
+                          hintText: '91 234 56 78',
+                          prefixText: '+998 ',
+                          labelStyle: TextStyle(
+                            fontSize: 20,
+                          ),
+                          labelText: 'Телефон',
+                        ),
                       ),
-                      labelText: 'Телефон',
-                    ),
-                  ),
-                )
-              else
-                Container(
-                  child: TextField(
-                    controller: _passwordController,
-                    maxLength: 6,
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        value.length == 6
-                            ? _isRequest = true
-                            : _isRequest = false;
-                      });
-                      print(value.length);
-                    },
-                    decoration: InputDecoration(
-                      hintText: '123456',
-                      labelStyle: TextStyle(
-                        fontSize: 20,
+                    )
+                  : Container(
+                      child: TextField(
+                        controller: _passwordController,
+                        maxLength: 6,
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            value.length == 6
+                                ? _isRequest = true
+                                : _isRequest = false;
+                          });
+                          print(value.length);
+                        },
+                        decoration: InputDecoration(
+                          hintText: '123456',
+                          labelStyle: TextStyle(
+                            fontSize: 20,
+                          ),
+                          labelText: 'Код',
+                        ),
                       ),
-                      labelText: 'Код',
                     ),
-                  ),
-                ),
               SizedBox(
                 height: 30,
               ),

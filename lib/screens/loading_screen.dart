@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/http_helper.dart';
-import 'package:prosto/helpers/locale_storage_helper.dart';
 import 'package:prosto/helpers/payment_types.dart';
 import 'package:prosto/helpers/services.dart';
 import 'package:prosto/helpers/users.dart';
@@ -9,7 +7,7 @@ import 'package:prosto/models/user.dart';
 import 'package:prosto/screens/home_screen.dart';
 import 'package:prosto/screens/login_screen.dart';
 import 'package:prosto/screens/profile/profile_edit_screen.dart';
-import '../screens/lang_screen.dart';
+
 
 class LoadingScreen extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

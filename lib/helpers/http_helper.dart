@@ -49,7 +49,7 @@ class HttpHelper {
       domain + '/tasks/create',
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       },
       body: jsonEncode(task),
     );
