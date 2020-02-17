@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:prosto/helpers/locale_storage_helper.dart';
-
-final domain = 'http://prosto.iglight.uz/mob-api';
+import 'package:prosto/main.dart';
 
 errorHelper(http.Response response, handler, Map params) async {
   print('helper started');
@@ -13,12 +12,17 @@ errorHelper(http.Response response, handler, Map params) async {
   print('body: $resBody');
   if (statusCode == 200) {
     return resBody;
+  } else if (statusCode == 400) {
+    return resBody;
   } else if (statusCode == 401 && resBody['error'] == 'token_expired') {
-    if (! await refreshToken()) {
+    if (!await refreshToken()) {
       return null;
     }
     return handler(params);
-  } else if (statusCode == 401 && resBody['error'] != 'token_expired') {}
+  } else if (statusCode == 401 && resBody.containsKey('errors')) {
+    print('error');
+    return resBody;
+  }
 }
 
 Future<bool> refreshToken() async {
@@ -36,6 +40,7 @@ Future<bool> refreshToken() async {
   final headers = response.headers;
   print(headers);
   if (headers.containsKey('authorization') == false) {
+    print('token not recived');
     return false;
   }
   print(headers['authorization']);

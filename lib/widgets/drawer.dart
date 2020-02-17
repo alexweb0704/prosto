@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prosto/helpers/locale_storage_helper.dart';
+import 'package:prosto/helpers/token.dart';
 import 'package:prosto/models/user.dart';
+import 'package:prosto/screens/loading_screen.dart';
 import 'package:prosto/screens/my_wallet_screen.dart';
 import 'package:prosto/screens/profile/profile_screen.dart';
 import '../screens/tasks/create/step1.dart';
@@ -258,7 +260,15 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
               ),
             ),
             InkWell(
-              onTap: () {},
+              onTap: () async {
+                await invalidateToken({});
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoadingScreen(),
+                  ),
+                );
+              },
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20.0,

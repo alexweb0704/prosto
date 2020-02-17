@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prosto/helpers/services.dart';
 import '../../../helpers/http_helper.dart';
 import '../../../models/service.dart';
 import '../create/step2.dart';
@@ -9,12 +10,7 @@ class CreateTaskScreen1 extends StatefulWidget {
 }
 
 class _CreateTaskScreen1State extends State<CreateTaskScreen1> {
-  Future<List<Service>> futureServices;
-  @override
-  void initState() {
-    super.initState();
-    futureServices = HttpHelper.getServices();
-  }
+  Future<List<Service>> futureServices = getLocalServices();
 
   @override
   Widget build(BuildContext context) {

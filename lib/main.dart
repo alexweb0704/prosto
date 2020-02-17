@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:prosto/screens/login_screen.dart';
 import 'screens/loading_screen.dart';
 import 'screens/lang_screen.dart';
+
+final String domain = 'http://prosto.iglight.uz/mob-api';
+final LocalStorage storage = new LocalStorage('prosto_app');
 
 void main() => runApp(MyApp());
 

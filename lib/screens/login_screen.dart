@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/http_helper.dart';
+import 'package:prosto/helpers/users.dart';
 import '../screens/home_screen.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -24,22 +24,45 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
     });
     print(_usernameController.text);
-    Map<String, String> operation = await HttpHelper.logining(
-      username: '+998' + _usernameController.text,
-      password: _passwordController.text,
-    );
+    Map credentials = {};
+
+    if (_usernameController.text != '') {
+      credentials['username'] = '+998' + _usernameController.text;
+    }
+
+    if (_passwordController.text != '') {
+      credentials['password'] = _passwordController.text;
+    }
+
+    Map<String, dynamic> operation;
+    try {
+      operation = await login(credentials);
+    } catch (e) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Что то с интернетом. Проверьте подключение к интернету и перезайдите в приложение',
+          ),
+        ),
+      );
+    }
     setState(() {
       _loading = false;
     });
     if (operation.containsKey('password')) {
       setState(() {
         _isUsername = true;
-        _passwordController.text = operation['password'];
+        _passwordController.text = operation['password'].toString();
       });
       print(operation['password']);
       return;
     }
-    if (operation.containsKey('error')) {
+    if (operation.containsKey('errors')) {
+      _scaffoldKey.currentState.showSnackBar(
+        SnackBar(
+          content: Text('Неверный код'),
+        ),
+      );
       return;
     }
     Navigator.pushReplacement(

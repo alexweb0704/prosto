@@ -7,7 +7,7 @@ class MyWalletScreen extends StatefulWidget {
 }
 
 class _MyWalletScreenState extends State<MyWalletScreen> {
-  int _selected = 1;
+  int _selected = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,70 +68,45 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  ChoiceChip(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(10),
-                      ),
-                    ),
-                    label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 6),
-                      width: (MediaQuery.of(context).size.width / 2) - 40,
-                      child: Center(
-                        child: Text(
-                          'Списания',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: _selected == 0 ? Colors.white : null,
-                          ),
+            DefaultTabController(
+              length: 2,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  children: <Widget>[
+                    TabBar(
+                      onTap: (value) {
+                        setState(() {
+                          _selected = value;
+                        });
+                      },
+                      indicator: BoxDecoration(
+                        color: Colors.deepOrange,
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(10),
+                          right: Radius.circular(10),
                         ),
                       ),
-                    ),
-                    elevation: 4,
-                    backgroundColor: Colors.white,
-                    selectedColor: Color(0xFF68BB49),
-                    selected: _selected == 0,
-                    onSelected: (value) {
-                      setState(() {
-                        _selected = 0;
-                      });
-                    },
-                  ),
-                  ChoiceChip(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(10),
-                      ),
-                    ),
-                    label: Container(
-                      padding: EdgeInsets.symmetric(vertical: 6),
-                      width: (MediaQuery.of(context).size.width / 2) - 40,
-                      child: Center(
-                        child: Text(
-                          'Пополнение',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: _selected == 1 ? Colors.white : null,
-                          ),
+                      indicatorPadding: EdgeInsets.all(0),
+                      labelPadding: EdgeInsets.all(0),
+                      tabs: <Widget>[
+                        Tab(
+
+                          text: 'Списания',
                         ),
-                      ),
+                        Tab(
+                          text: 'Пополнения',
+                        ),
+                      ],
                     ),
-                    backgroundColor: Colors.white,
-                    elevation: 4,
-                    selectedColor: Color(0xFF68BB49),
-                    selected: _selected == 1,
-                    onSelected: (value) {
-                      setState(() {
-                        _selected = 1;
-                      });
-                    },
-                  ),
-                ],
+                    TabBarView(
+                      children: <Widget>[
+                        Text('suka'),
+                        Text('pider'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
