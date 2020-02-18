@@ -46,7 +46,6 @@ Future<Map<String, dynamic>> login(Map map) async {
     body: jsonEncode(body),
   );
 
-  
   final jsonData = await errorHelper(response, getCurrentUser, map);
   print(jsonData);
   if (jsonData != null && jsonData.containsKey('errors')) {
@@ -59,7 +58,7 @@ Future<Map<String, dynamic>> login(Map map) async {
   }
 
   if (jsonData != null && jsonData.containsKey('token')) {
-    setToken(jsonData['token']);  
+    setToken(jsonData['token']);
   }
 
   if (jsonData != null && jsonData.containsKey('user')) {
@@ -71,5 +70,32 @@ Future<Map<String, dynamic>> login(Map map) async {
 Future<bool> setUserLS(User user) async {
   await storage.ready;
   storage.setItem('currentUser', user.toJsonEncodable());
+  return true;
+}
+
+Future<User> getLocalCurrentUser() async {
+  await storage.ready;
+  return User.fromJson(jsonDecode(await storage.getItem('currentUser')));
+}
+
+Future<bool> updateUser(map) async {
+  final token = await getToken();
+  final response = await http.post(
+    domain + '/user/update',
+    headers: {
+      "Authorization": "Bearer $token",
+      "Content-type": "application/json"
+    },
+    body: jsonEncode(map),
+  );
+
+  final jsonData = await errorHelper(response, updateUser, map);
+
+  if (jsonData == null && jsonData.containsKey('user') == false) {
+    return false;
+  }
+  
+  User user = User.fromJson(jsonData['user']);
+  setUserLS(user);
   return true;
 }

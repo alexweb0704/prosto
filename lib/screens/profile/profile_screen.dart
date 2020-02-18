@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prosto/helpers/locale_storage_helper.dart';
+import 'package:prosto/helpers/users.dart';
 import 'package:prosto/models/user.dart';
 import 'package:prosto/screens/profile/profile_edit_screen.dart';
 import 'package:prosto/widgets/drawer.dart';
 import 'package:prosto/widgets/profile_services.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -16,10 +18,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Gender(code: 'male', name: 'Мужской'),
     Gender(code: 'female', name: 'Женский'),
   ];
-  Future<User> currentUser = LStorage.getUser();
+  Future<User> currentUser = getLocalCurrentUser();
+  void _update() async {
+    final result = await Navigator.push(
+      context,
+      await currentUser.then((user) {
+        return MaterialPageRoute(
+          builder: (context) => ProfileEditScreen(user: user),
+        );
+      }),
+    );
+
+    if (result == null) {
+      return;
+    }
+
+    if (result.containsKey('user')) {
+      currentUser = getLocalCurrentUser();
+    }
+
+    if (result.containsKey('snackBarContent')) {
+      final ScaffoldState scaffold = widget.scaffoldKey.currentState;
+      scaffold.showSnackBar(
+        SnackBar(
+          content: result['snackBarContent'],
+          backgroundColor: result.containsKey('snackBarColor') ? result['snackBarColor'] : null,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: widget.scaffoldKey,
       drawer: ProstoDrawer(),
       appBar: AppBar(
         title: Text('Личный кабинет'),
@@ -73,14 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           top: 20.0,
                           right: 20.0,
                           child: FloatingActionButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfileEditScreen(),
-                                ),
-                              );
-                            },
+                            onPressed: _update,
                             heroTag: 'save-float-btn',
                             mini: true,
                             backgroundColor: Color(0xFF3F4089),

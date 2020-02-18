@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/locale_storage_helper.dart';
+import 'package:prosto/helpers/users.dart';
+import 'package:prosto/models/service.dart';
 import 'package:prosto/models/user.dart';
 import 'package:prosto/screens/profile/services_select_screen.dart';
 import 'package:prosto/widgets/profile_services.dart';
-import 'profile_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileEditScreen extends StatefulWidget {
+  final User user;
+  ProfileEditScreen({this.user});
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
@@ -16,31 +18,88 @@ class ProfileEditScreen extends StatefulWidget {
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
   final TextEditingController _passportController = TextEditingController();
   Gender gender;
+  List<int> servicesId = List();
+  List<int> oldServicesId = List();
   List<Gender> items = [
     Gender(code: 'male', name: 'Мужской'),
     Gender(code: 'female', name: 'Женский'),
   ];
   File avatar;
-
-  Future<User> currentUser = LStorage.getUser();
-
+  List<Service> services;
+  Future<User> user;
   @override
   void initState() {
     super.initState();
-    currentUser.then((user) {
-      _usernameController.text = user.username;
-      _nameController.text = user.name;
-      _genderController.text = user.gender;
-      _passportController.text = user.passport;
-      setState(() {
-        gender = user.gender == 'male'
-            ? items[0]
-            : user.gender == 'female' ? items[1] : null;
-      });
+    _usernameController.text = widget.user.username;
+    _nameController.text = widget.user.name;
+    items.forEach((item) {
+      if (item.code == widget.user.gender) {
+        setState(() {
+          gender = item;
+        });
+      }
     });
+    widget.user.services.forEach((item) {
+      servicesId.add(item.id);
+    });
+    oldServicesId = servicesId;
+    _passportController.text = widget.user.passport;
+    services = widget.user.services;
+  }
+
+  Future<bool> update() async {
+    print('user update');
+    Map map = Map();
+    if (widget.user.username != _usernameController.text) {
+      map['username'] = _usernameController.text;
+    }
+    if (widget.user.name != _nameController.text) {
+      map['name'] = _nameController.text;
+    }
+    if (gender != null && widget.user.gender != gender.code) {
+      map['gender'] = gender.code;
+    }
+    if (widget.user.passport != _passportController.text) {
+      map['passport'] = _passportController.text;
+    }
+    List<int> servicesID = List();
+
+    for (final service in services) {
+      servicesID.add(service.id);
+    }
+
+    map['services'] = servicesID;
+
+    if (map.isNotEmpty && await updateUser(map)) {
+      User user = await getLocalCurrentUser();
+      Navigator.pop(
+        context,
+        {
+          'snackBarContent': Text('Ваш профиль обновлен'),
+          'snackBarColor': Color(0xFF68BB49),
+          'user': user,
+        },
+      );
+      return true;
+    }
+
+    return null;
+  }
+
+  void _setServices() async {
+    final items = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServicesSelectScreen(servicesId),
+      ),
+    );
+    setState(() {
+      services = items;
+    });
+
+    print(services);
   }
 
   @override
@@ -97,12 +156,13 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     right: 20.0,
                     child: FloatingActionButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(),
-                          ),
-                        );
+                        update();
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ProfileScreen(),
+                        //   ),
+                        // );
                       },
                       heroTag: 'save-float-btn',
                       mini: true,
@@ -191,50 +251,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 style: TextStyle(fontSize: 16, color: Color(0xAA000000)),
               ),
             ),
-            FutureBuilder(
-              future: currentUser,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var user = snapshot.data;
-                  return ProfileServices(
-                    user.services,
-                    showDeleteButton: true,
-                  );
-                }
-                return Center(child: CircularProgressIndicator());
-              },
+            ProfileServices(
+              services,
+              showDeleteButton: true,
             ),
-            FutureBuilder(
-              future: currentUser,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var user = snapshot.data;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: RaisedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ServicesSelectScreen(user.services),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Добавить сферу деятельности',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                }
-                return CircularProgressIndicator();
-              },
-            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: RaisedButton(
+                onPressed: _setServices,
+                child: Text(
+                  'Добавить сферу деятельности',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
           ],
         ),
       ),

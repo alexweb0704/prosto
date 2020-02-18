@@ -1,21 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/http_helper.dart';
+import 'package:prosto/helpers/services.dart';
+import 'package:prosto/models/list_item.dart';
 import 'package:prosto/models/service.dart';
 
 class ServicesSelectScreen extends StatefulWidget {
-  final List<Service> selectedServices;
+  final List<int> selectedServices;
   ServicesSelectScreen(this.selectedServices);
   @override
   _ServicesSelectScreenState createState() => _ServicesSelectScreenState();
 }
 
 class _ServicesSelectScreenState extends State<ServicesSelectScreen> {
-  Future<List<Service>> futureServices;
-  List<Service> selectedServices = List();
+  Future<List<Service>> futureServices = getLocalServices();
+  List<int> selectedServices = List();
+  List<ListItem> list = List();
+
   @override
   void initState() {
     super.initState();
-    futureServices = HttpHelper.getServices();
+    selectedServices = widget.selectedServices;
+    futureServices.then((services) {
+      for (final service in services) {
+        ListItem item = ListItem(service);
+        print('selected services: $selectedServices');
+        if (selectedServices.contains(item.data.id)) {
+          item.isSelected = true;
+        }
+        list.add(item);
+      }
+    });
+  }
+
+  void _toBack () {
+    List<Service> services = List();
+    list.forEach((item) {
+      services.add(item.data);
+    });
+    print(services);
+    Navigator.pop(context, services);
   }
 
   @override
@@ -38,45 +60,72 @@ class _ServicesSelectScreenState extends State<ServicesSelectScreen> {
         ),
       ),
       body: SafeArea(
-        child: FutureBuilder(
-          future: futureServices,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              var services = snapshot.data;
-              return ListView.builder(
-                  itemCount: services.length,
-                  itemBuilder: (context, index) {
-                    bool selected = false;
-                    selectedServices.forEach((item) {
-                      if (item.id == services[index].id) {
-                        setState(() {
-                          selected = true;
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: 0,
+              bottom: 100,
+              left: 0,
+              right: 0,
+              child: FutureBuilder(
+                future: futureServices,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return ListView.builder(
+                        itemCount: list.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: list[index].isSelected
+                                ? Theme.of(context).accentColor
+                                : null,
+                            child: new ListTile(
+                              dense: true,
+                              title: Text(
+                                list[index].data.name,
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  color: list[index].isSelected
+                                      ? Colors.white
+                                      : null,
+                                ),
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  list[index].isSelected =
+                                      !list[index].isSelected;
+                                });
+                              },
+                            ),
+                          );
                         });
-                      }
-                    });
-                    return Card(
-                      color: selected ? Theme.of(context).accentColor : null,
-                      child: new ListTile(
-                        dense: true,
-                        title: Text(
-                          services[index].name,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            color: selected ? Colors.white : null,
-                          ),
-                        ),
-                        onTap: () {
-                          setState(() {
-                            selectedServices.add(services[index]);
-                          });
-                        },
-                      ),
-                    );
-                  });
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          },
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ),
+            Positioned(
+              height: 50,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: FlatButton(
+                  onPressed: _toBack,
+                  color: Color(0xFF68BB49),
+                  textColor: Colors.white,
+                  child: Text(
+                    'Сохранить',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

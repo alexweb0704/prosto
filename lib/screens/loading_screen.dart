@@ -21,8 +21,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
     Timer(Duration(seconds: 1), () async {
       User currentUser;
-        getPaymentTypes({});
       try {
+        getPaymentTypes({});
         getServices({});
         currentUser = await getCurrentUser({});
         if (currentUser == null) {
