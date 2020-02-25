@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -71,6 +73,37 @@ class _TaskScreenState extends State<TaskScreen> {
         dense: true,
       ),
     );
+    offerWidgets.add(AnimatedContainer(
+      duration: Duration(milliseconds: 200),
+      child: selectedOffer is Offer
+          ? Column(
+              children: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14.0, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("Выбран:"),
+                      Text('${selectedOffer.executor.name}'),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14.0, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("Телефон:"),
+                      Text('${selectedOffer.executor.username}'),
+                    ],
+                  ),
+                )
+              ],
+            )
+          : null,
+    ));
     for (final offer in offers) {
       offerWidgets.add(ExpansionTile(
         title: Column(
@@ -83,7 +116,8 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ],
         ),
-        initiallyExpanded: selectedOffer.id == offer.id,
+        initiallyExpanded:
+            selectedOffer != null && selectedOffer.id == offer.id,
         children: <Widget>[
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 14),
@@ -183,9 +217,8 @@ class _TaskScreenState extends State<TaskScreen> {
                               horizontal: 14, vertical: 10),
                           child: Text(
                             'Вы выбрали этого исполнителя',
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor
-                            ),
+                            style:
+                                TextStyle(color: Theme.of(context).accentColor),
                           ),
                         )
                       : Container(
@@ -219,7 +252,6 @@ class _TaskScreenState extends State<TaskScreen> {
                 Marker(
                   markerId: MarkerId('marker'),
                   position: LatLng(task.coorLat, task.coorLong),
-                  draggable: true,
                 ),
               ];
               final CameraPosition _kGooglePlex = CameraPosition(
@@ -232,7 +264,9 @@ class _TaskScreenState extends State<TaskScreen> {
                   hasOffered = true;
                 }
               }
+              final ScrollController scrollController = ScrollController();
               return ListView(
+                controller: scrollController,
                 children: <Widget>[
                   Column(
                     children: <Widget>[
@@ -384,6 +418,15 @@ class _TaskScreenState extends State<TaskScreen> {
                               onMapCreated: (GoogleMapController controller) {
                                 _controller.complete(controller);
                               },
+                              onTap: (coors) {
+                                scrollController.dispose();
+                              },
+                              gestureRecognizers:
+                                  <Factory<OneSequenceGestureRecognizer>>[
+                                new Factory<OneSequenceGestureRecognizer>(
+                                  () => new EagerGestureRecognizer(),
+                                ),
+                              ].toSet(),
                               markers:
                                   _markers.length > 0 ? _markers.toSet() : null,
                               onCameraMove: (cameraPosition) {},
