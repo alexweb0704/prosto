@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prosto/screens/tasks/find/find_task.dart';
 import '../screens/tasks/create/step1.dart';
 import '../widgets/drawer.dart';
 
@@ -75,7 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: RaisedButton(
                 textColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 40),
-                onPressed: () async {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FindTaskScreen(),
+                    ),
+                  );
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

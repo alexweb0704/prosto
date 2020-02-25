@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:prosto/models/task.dart';
 import 'package:prosto/screens/tasks/task.dart';
 
 class ProstoCard extends StatefulWidget {
   final Task task;
   final bool showUser;
-  ProstoCard({this.task, this.showUser});
+  final Function tapHandler;
+  ProstoCard({this.task, this.showUser, this.tapHandler});
   @override
   _ProstoCardState createState() => _ProstoCardState();
 }
@@ -16,21 +18,19 @@ class _ProstoCardState extends State<ProstoCard> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TaskScreen(),
-            ),
-          );
-        },
+        onTap: widget.tapHandler,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
               height: 10,
               decoration: BoxDecoration(
-                color: Color(0xFF68BB49),
+                color: widget.task.status.code == 'new'
+                    ? Colors.white
+                    : widget.task.status.code == 'executor_selected' ||
+                            widget.task.status.code == 'is_performed'
+                        ? Color(0xFF3F4089)
+                        : Color(0xFF68BB49),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(5),
                   topRight: Radius.circular(5),
@@ -63,7 +63,9 @@ class _ProstoCardState extends State<ProstoCard> {
                         width: 5,
                       ),
                       Text(
-                        "Ташкент, улица мразь",
+                        widget.task.isRemote
+                            ? 'Удаленнае задание'
+                            : widget.task.address,
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
                         ),
@@ -83,11 +85,17 @@ class _ProstoCardState extends State<ProstoCard> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text("01.01.2020 15:00"),
+                      Text(
+                        widget.task.startedAt != null
+                            ? DateFormat('dd.mm.yyyy hh:mm')
+                                .format(widget.task.startedAt)
+                                .toString()
+                            : 'Не определено',
+                      ),
                       Expanded(
                         child: Text(""),
                       ),
-                      Text("Категория"),
+                      Text(widget.task.service.name),
                       SizedBox(
                         width: 5,
                       ),
@@ -111,12 +119,18 @@ class _ProstoCardState extends State<ProstoCard> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text("01.01.2020 15:00"),
+                      Text(
+                        widget.task.finishedAt != null
+                            ? DateFormat('dd.mm.yyyy hh:mm')
+                                .format(widget.task.finishedAt)
+                                .toString()
+                            : 'Не определено',
+                      ),
                       Expanded(
                         child: Text(""),
                       ),
                       Text(
-                        "50 000.00",
+                        widget.task.price.toString(),
                         style: TextStyle(
                           color: Color(0xFF68BB49),
                         ),
@@ -131,15 +145,15 @@ class _ProstoCardState extends State<ProstoCard> {
                       ),
                     ],
                   ),
-                  Container(
+                  widget.showUser ? Container(
                     margin: EdgeInsets.only(
                       top: 4.0,
                       bottom: 6.0,
                     ),
                     height: 1,
                     color: Color(0xFF68BB49),
-                  ),
-                  Row(
+                  ) : Container(),
+                  widget.showUser ? Row(
                     children: <Widget>[
                       Icon(
                         Icons.person_outline,
@@ -151,12 +165,12 @@ class _ProstoCardState extends State<ProstoCard> {
                       ),
                       Expanded(
                         child: Text(
-                          "Sasha Raimov Doniyorovich",
+                          widget.task.user.name,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
-                        "+998 90 329 79 89",
+                        widget.task.user.username,
                         style: TextStyle(
                           color: Color(0xFF68BB49),
                         ),
@@ -170,7 +184,7 @@ class _ProstoCardState extends State<ProstoCard> {
                         color: Color(0xFF68BB49),
                       ),
                     ],
-                  ),
+                  ) : Container(),
                 ],
               ),
             ),

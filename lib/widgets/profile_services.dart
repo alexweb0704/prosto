@@ -4,9 +4,11 @@ import 'package:prosto/models/service.dart';
 class ProfileServices extends StatefulWidget {
   final List<Service> services;
   final bool showDeleteButton;
+  final Function deleteHandler;
   ProfileServices(
     this.services, {
     this.showDeleteButton: false,
+    this.deleteHandler,
   });
   @override
   _ProfileServicesState createState() => _ProfileServicesState();
@@ -32,7 +34,9 @@ class _ProfileServicesState extends State<ProfileServices> {
                     color: Color(0xFF3F4089),
                   ),
                   alignment: Alignment.bottomCenter,
-                  onPressed: () {},
+                  onPressed: () {
+                    widget.deleteHandler(service);
+                  },
                 )
               : null,
         ),

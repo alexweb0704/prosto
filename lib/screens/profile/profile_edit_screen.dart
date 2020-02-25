@@ -95,10 +95,16 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         builder: (context) => ServicesSelectScreen(servicesId),
       ),
     );
+    if (items == null) {
+      return;
+    }
     setState(() {
       services = items;
     });
-
+    servicesId = [];
+    for(final service in services) {
+      servicesId.add(service.id);
+    }
     print(services);
   }
 
@@ -157,12 +163,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     child: FloatingActionButton(
                       onPressed: () {
                         update();
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => ProfileScreen(),
-                        //   ),
-                        // );
                       },
                       heroTag: 'save-float-btn',
                       mini: true,
@@ -254,6 +254,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             ProfileServices(
               services,
               showDeleteButton: true,
+              deleteHandler: (service) {
+                print(servicesId);
+                print(services);
+                print(service.id);
+                setState(() {
+                  servicesId.remove(service.id);
+                  servicesId = servicesId;
+                  services.remove(service);
+                  services = services;
+                });
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -66,7 +66,7 @@ class Task {
           task['service'] == null ? null : Service.fromJson(task['service']),
       isRemote: task['is_remote'] is String
           ? bool.fromEnvironment(task['is_remote'])
-          : task['is_remote'],
+          : task['is_remote'] != null ? task['is_remote'] : false,
       status: task['status'] == null ? null : Status.fromJson(task['status']),
       createdAt: task['created_at'] == null
           ? null

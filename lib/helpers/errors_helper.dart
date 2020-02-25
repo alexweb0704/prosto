@@ -16,9 +16,10 @@ errorHelper(http.Response response, handler, Map params) async {
     return resBody;
   } else if (statusCode == 401 && resBody['error'] == 'token_expired') {
     if (!await refreshToken()) {
+      print('asd');
       return null;
     }
-    return handler(params);
+    return await handler(params);
   } else if (statusCode == 401 && resBody.containsKey('errors')) {
     print('error');
     return resBody;

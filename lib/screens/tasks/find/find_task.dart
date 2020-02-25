@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prosto/helpers/tasks.dart';
 import 'package:prosto/models/task.dart';
+import 'package:prosto/screens/tasks/task.dart';
 import 'package:prosto/widgets/card.dart';
 import '../../../widgets/drawer.dart';
 
@@ -40,7 +41,20 @@ class _FindTaskScreenState extends State<FindTaskScreen> {
               return ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
-                  return ProstoCard(task: tasks[index], showUser: true);
+                  return ProstoCard(
+                    task: tasks[index],
+                    showUser: true,
+                    tapHandler: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskScreen(
+                            taskId: tasks[index].id,
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
               );
             }

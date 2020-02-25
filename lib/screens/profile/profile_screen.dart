@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (snapshot.hasData) {
                       var user = snapshot.data;
                       return Text(
-                        user.name,
+                        user.name != null ? user.name : '',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 20,

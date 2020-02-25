@@ -1,15 +1,63 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/http_helper.dart';
+import 'package:prosto/helpers/offers.dart';
+import 'package:prosto/helpers/payment_types.dart';
+import 'package:prosto/models/offer.dart';
 import 'package:prosto/models/payment_type.dart';
 
 class ProstoNewOfferModal extends StatefulWidget {
+  final int taskId;
+  ProstoNewOfferModal(this.taskId);
   @override
   _ProstoNewOfferModalState createState() => _ProstoNewOfferModalState();
 }
 
 class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
-  Future<List<PaymentType>> _futurePaymentTypes = HttpHelper.getPaymentTypes();
-  PaymentType _selected;
+  Future<List<PaymentType>> _futurePaymentTypes = getLocalPaymentTypes();
+  PaymentType _paymentType;
+  TextEditingController commentController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  bool _validated = false;
+  bool _isLoading = false;
+  int price;
+  _validator(value) {
+    price = int.parse(priceController.text.replaceAll(' ', ''));
+    print(price);
+    if (price >= 1000 &&
+        commentController.text.length > 100 &&
+        _paymentType != null) {
+      setState(() {
+        _validated = true;
+      });
+      return;
+    }
+    setState(() {
+      _validated = false;
+    });
+    return;
+  }
+
+  _createOffer() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    Map<String, dynamic> map = {
+      "task_id": widget.taskId,
+      "price": price,
+      "comment": commentController.text,
+      "payment_type_id": _paymentType.id,
+    };
+
+    Offer offer = await createOffer(map);
+    if (offer != null) {
+      Navigator.pop(context, offer);
+    }
+    // setState(() {
+    //   _isLoading = false;
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +92,8 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
               child: ListView(
                 children: <Widget>[
                   TextField(
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 0,
-                      ),
-                      labelText: 'Описание',
-                      hintText: 'Добавте описание предложения',
-                    ),
-                  ),
-                  TextField(
+                    controller: priceController,
+                    onChanged: _validator,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(
@@ -62,7 +102,7 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
                       ),
                       labelText: 'Сумма',
                       hintText: 'Введите вашу сумму',
-                      suffixText: 'Сумм',
+                      suffixText: 'Сум',
                     ),
                   ),
                   FutureBuilder(
@@ -74,12 +114,17 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
                         for (final paymentType in paymentTypes) {
                           items.add(DropdownMenuItem(
                             value: paymentType,
-                            child: Text(paymentType.name),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                paymentType.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ));
                         }
                         return Container(
                           margin: EdgeInsets.symmetric(
-                            horizontal: 10.0,
                             vertical: 10.0,
                           ),
                           decoration: BoxDecoration(
@@ -92,14 +137,21 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
                           width: MediaQuery.of(context).size.width,
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton(
-                              value: _selected,
+                              value: _paymentType,
                               items: items,
                               onChanged: (value) {
                                 setState(() {
-                                  _selected = value;
+                                  _paymentType = value;
                                 });
+                                _validator(value);
                               },
-                              hint: Text('Выберите форму оплаты', overflow: TextOverflow.ellipsis,),
+                              hint: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  'Выберите форму оплаты',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                               style: TextStyle(
                                 color: Color(0xFF68BB49),
                                 fontSize: 18.0,
@@ -117,7 +169,9 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
                     },
                   ),
                   TextField(
+                    controller: commentController,
                     maxLines: 6,
+                    onChanged: _validator,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 10,
@@ -137,7 +191,7 @@ class _ProstoNewOfferModalState extends State<ProstoNewOfferModal> {
                   borderRadius: BorderRadiusDirectional.circular(0),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 16),
-                onPressed: () {},
+                onPressed: _validated && !_isLoading ? _createOffer : null,
                 child: Text('Подать предложение'),
               ),
             ),

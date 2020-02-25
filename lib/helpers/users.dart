@@ -9,6 +9,7 @@ import 'package:prosto/main.dart';
 Future<User> getCurrentUser(map) async {
   print('get current user method started');
   final token = await getToken();
+
   if (token == null) {
     return null;
   }
@@ -16,8 +17,12 @@ Future<User> getCurrentUser(map) async {
     domain + '/user/get',
     headers: {"Authorization": "Bearer $token"},
   );
-
   final jsonUser = await errorHelper(response, getCurrentUser, {});
+  
+  if (jsonUser is User) {
+    return jsonUser;
+  }
+
   if (jsonUser != null && jsonUser.containsKey('user')) {
     User user = User.fromJson(jsonUser['user']);
     setUserLS(user);
@@ -94,7 +99,7 @@ Future<bool> updateUser(map) async {
   if (jsonData == null && jsonData.containsKey('user') == false) {
     return false;
   }
-  
+
   User user = User.fromJson(jsonData['user']);
   setUserLS(user);
   return true;

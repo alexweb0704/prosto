@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 Future<List<PaymentType>> getPaymentTypes (map) async {
   print('get payment types method start');
 
-  final response = await http.get(domain + '/services/get');
+  final response = await http.get(domain + '/payment-types/get');
 
   final jsonData = await errorHelper(response, getPaymentTypes, {});
 
-
+  print('payment types json data:' + jsonData.toString());
   if (jsonData.containsKey('payment_types') == false) {
     return null;
   }
@@ -22,7 +22,7 @@ Future<List<PaymentType>> getPaymentTypes (map) async {
   for (final paymentType in jsonData['payment_types']) {
     paymentTypes.add(PaymentType.fromJson(paymentType));
   }
-
+  setPaymentTypes(paymentTypes);
   return paymentTypes;
 }
 
@@ -38,9 +38,9 @@ Future<List<PaymentType>> getLocalPaymentTypes() async {
   await storage.ready;
   final jsonPaymentTypes = storage.getItem('paymentTypes');
   print(jsonPaymentTypes);
-  List<PaymentType> paymentType = List();
+  List<PaymentType> paymentTypes = List();
   for (final paymentType in jsonPaymentTypes) {
-    paymentType.add(PaymentType.fromJson(jsonDecode(paymentType)));
+    paymentTypes.add(PaymentType.fromJson(jsonDecode(paymentType)));
   }
-  return paymentType;
+  return paymentTypes;
 }

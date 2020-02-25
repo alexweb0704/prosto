@@ -9,6 +9,9 @@ class PaymentType {
   });
 
   factory PaymentType.fromJson(Map<String, dynamic> paymentType) {
+    if (paymentType == null) {
+      return null;
+    }
     return PaymentType(
       id: paymentType['id'],
       name: paymentType['name'],

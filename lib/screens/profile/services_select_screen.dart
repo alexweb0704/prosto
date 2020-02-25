@@ -34,7 +34,9 @@ class _ServicesSelectScreenState extends State<ServicesSelectScreen> {
   void _toBack () {
     List<Service> services = List();
     list.forEach((item) {
-      services.add(item.data);
+      if (item.isSelected) {
+        services.add(item.data);
+      }
     });
     print(services);
     Navigator.pop(context, services);
