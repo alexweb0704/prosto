@@ -8,7 +8,6 @@ import 'package:prosto/screens/home_screen.dart';
 import 'package:prosto/screens/login_screen.dart';
 import 'package:prosto/screens/profile/profile_edit_screen.dart';
 
-
 class LoadingScreen extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
@@ -16,50 +15,59 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  bool _loading = false;
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
-      User currentUser;
-      try {
-        getPaymentTypes({});
-        getServices({});
-        currentUser = await getCurrentUser({});
-        if (currentUser == null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LoginScreen(),
-            ),
-          );
-          return null;
-        }
-        if (currentUser.name == null || currentUser.name == '') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProfileEditScreen(),
-            ),
-          );
-          return;
-        }
+    _initializing();
+  }
+
+  _initializing() async {
+    _loading = true;
+    setState(() {});
+    User currentUser;
+    try {
+      getPaymentTypes({});
+      getServices({});
+      currentUser = await getCurrentUser({});
+      if (currentUser == null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => LoginScreen(),
           ),
         );
-      } catch (e) {
-        final ScaffoldState scaffold = widget.scaffoldKey.currentState;
-        scaffold.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Что то с интернетом. Проверьте подключение к интернету и перезайдите в приложение',
-            ),
-          ),
-        );
+        return null;
       }
-    });
+      if (currentUser.name == null || currentUser.name == '') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileEditScreen(user: currentUser),
+          ),
+        );
+        return;
+      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      final ScaffoldState scaffold = widget.scaffoldKey.currentState;
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Что то с интернетом. Проверьте подключение к интернету и перезайдите в приложение',
+          ),
+        ),
+      );
+      _loading = false;
+      setState(() {});
+    }
+    _loading = false;
+    setState(() {});
   }
 
   @override
@@ -77,7 +85,20 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 height: 33,
               ),
             ),
-            CircularProgressIndicator()
+            Container(
+              child: _loading
+                  ? CircularProgressIndicator()
+                  : Column(
+                      children: <Widget>[
+                        Text(
+                            'Что то пошло не так, по пробуйте повторить попытку'),
+                        RaisedButton(
+                          onPressed: _initializing,
+                          child: Text('Повторить'),
+                        ),
+                      ],
+                    ),
+            ),
           ],
         ),
       ),

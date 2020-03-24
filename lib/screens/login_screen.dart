@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prosto/helpers/users.dart';
+import 'package:prosto/screens/profile/profile_edit_screen.dart';
 import '../screens/home_screen.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -65,10 +66,21 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
+    final user = await getLocalCurrentUser();
+    if (user.name != null && user.name != '') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(),
+        builder: (context) => ProfileEditScreen(
+          user: user,
+        ),
       ),
     );
   }

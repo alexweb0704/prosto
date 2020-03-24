@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../helpers/http_helper.dart';
+import 'package:intl/intl.dart';
+import 'package:prosto/helpers/payment_types.dart';
 import '../../../models/payment_type.dart';
 import '../../../widgets/modal.dart';
 
@@ -29,7 +30,7 @@ class CreateTaskScreen5 extends StatefulWidget {
 }
 
 class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
-  Future<List<PaymentType>> _futurePaymentTypes = HttpHelper.getPaymentTypes();
+  Future<List<PaymentType>> _futurePaymentTypes = getLocalPaymentTypes();
   final TextEditingController _priceController = TextEditingController();
   PaymentType _selected;
   int _price = 0;
@@ -45,22 +46,26 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
       print(widget.finishedAt);
       print(_price);
       print(_selected.id);
+      print(DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.startedAt).toString());
       _task = {
         "title": widget.title,
         "description": widget.description,
         "service_id": widget.serviceId,
         "is_remote": widget.isRemote,
         "address": widget.address,
-        "started_at": widget.startedAt,
-        "finished_at": widget.finishedAt,
+        "started_at":
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.startedAt).toString(),
+        "finished_at":
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.finishedAt).toString(),
         "price": _price,
         "payment_type_id": _selected.id,
+        "coor_lat": widget.coorLat,
+        "coor_long": widget.coorLong,
       };
       showDialog(
+        barrierDismissible: false,
         context: context,
-        builder: (BuildContext context) => ModalWidget(
-          request: HttpHelper.createTask(_task, context),
-        ),
+        builder: (BuildContext context) => ModalWidget(_task),
       );
     }
   }
@@ -171,7 +176,7 @@ class _CreateTaskScreen5State extends State<CreateTaskScreen5> {
                     ? _createTask
                     : null,
                 child: Text(
-                  'Далее',
+                  'Создать',
                   style: TextStyle(
                     fontSize: 20,
                   ),

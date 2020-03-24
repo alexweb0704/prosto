@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:prosto/screens/login_screen.dart';
+import 'package:prosto/screens/no_connection.dart';
 import 'screens/loading_screen.dart';
 import 'screens/lang_screen.dart';
 
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/lang': (BuildContext context) => LangScreen(),
         '/': (BuildContext context) => LoadingScreen(),
         '/login': (BuildContext context) => LoginScreen(),
+        '/no-connection': (BuildContext context) => NoConnectionScreen(),
       },
     );
   }

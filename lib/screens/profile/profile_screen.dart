@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/locale_storage_helper.dart';
 import 'package:prosto/helpers/users.dart';
 import 'package:prosto/models/user.dart';
 import 'package:prosto/screens/profile/profile_edit_screen.dart';
@@ -19,12 +18,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Gender(code: 'female', name: 'Женский'),
   ];
   Future<User> currentUser = getLocalCurrentUser();
+
   void _update() async {
     final result = await Navigator.push(
       context,
       await currentUser.then((user) {
         return MaterialPageRoute(
-          builder: (context) => ProfileEditScreen(user: user),
+          builder: (context) => ProfileEditScreen(
+            user: user,
+            screen: ProfileScreen(),
+          ),
         );
       }),
     );
@@ -42,7 +45,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       scaffold.showSnackBar(
         SnackBar(
           content: result['snackBarContent'],
-          backgroundColor: result.containsKey('snackBarColor') ? result['snackBarColor'] : null,
+          backgroundColor: result.containsKey('snackBarColor')
+              ? result['snackBarColor']
+              : null,
         ),
       );
     }

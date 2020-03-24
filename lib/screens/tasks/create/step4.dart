@@ -89,9 +89,9 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
 
   _nextScreen() {
     DateTime startedAt = DateTime.parse(startDate.toString().split(' ')[0] +
-        ' ${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}');
+        ' ${startTime.hour < 10 ? 0.toString() + startTime.hour.toString() : startTime.hour}:${startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}');
     DateTime finishedAt = DateTime.parse(endDate.toString().split(' ')[0] +
-        ' ${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}');
+        ' ${endTime.hour < 10 ? 0.toString() + endTime.hour.toString() : endTime.hour}:${endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}');
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -181,7 +181,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                       ),
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        '${startTime.hour == 0 ? '00' : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}',
+                        '${startTime.hour < 10 ? 0.toString() + startTime.hour.toString() : startTime.hour}:${startTime.minute == 0 ? '00' : startTime.minute < 10 ? 0.toString() + startTime.minute.toString() : startTime.minute}',
                         style: TextStyle(
                           fontSize: 20.0,
                           color: Color(0xFF68BB49),
@@ -243,7 +243,7 @@ class _CreateTaskScreen4State extends State<CreateTaskScreen4> {
                       ),
                       padding: EdgeInsets.all(5.0),
                       child: Text(
-                        '${endTime.hour == 0 ? '00' : endTime.hour}:${endTime.minute == 0 ? '00' : endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}',
+                        '${endTime.hour < 10 ? 0.toString() + endTime.hour.toString() : startTime.hour}:${endTime.minute < 10 ? 0.toString() + endTime.minute.toString() : endTime.minute}',
                         style: TextStyle(
                           fontSize: 20.0,
                           color: Color(0xFF68BB49),

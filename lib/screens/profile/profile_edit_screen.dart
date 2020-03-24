@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:prosto/helpers/users.dart';
 import 'package:prosto/models/service.dart';
 import 'package:prosto/models/user.dart';
+import 'package:prosto/screens/home_screen.dart';
+import 'package:prosto/screens/profile/profile_screen.dart';
 import 'package:prosto/screens/profile/services_select_screen.dart';
 import 'package:prosto/widgets/profile_services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final User user;
-  ProfileEditScreen({this.user});
+  final Widget screen;
+  ProfileEditScreen({this.user, this.screen});
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
 }
@@ -50,6 +53,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Future<bool> update() async {
+    setState(() {
+      widget.user.updating = true;
+    });
     print('user update');
     Map map = Map();
     if (widget.user.username != _usernameController.text) {
@@ -73,18 +79,29 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     map['services'] = servicesID;
 
     if (map.isNotEmpty && await updateUser(map)) {
-      User user = await getLocalCurrentUser();
-      Navigator.pop(
-        context,
-        {
-          'snackBarContent': Text('Ваш профиль обновлен'),
-          'snackBarColor': Color(0xFF68BB49),
-          'user': user,
-        },
-      );
-      return true;
+      if (widget.screen is ProfileScreen) {
+        User user = await getLocalCurrentUser();
+        Navigator.pop(
+          context,
+          {
+            'snackBarContent': Text('Ваш профиль обновлен'),
+            'snackBarColor': Color(0xFF68BB49),
+            'user': user,
+          },
+        );
+        return true;
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
+      }
     }
-
+    setState(() {
+      widget.user.updating = false;
+    });
     return null;
   }
 
@@ -102,7 +119,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       services = items;
     });
     servicesId = [];
-    for(final service in services) {
+    for (final service in services) {
       servicesId.add(service.id);
     }
     print(services);
@@ -161,13 +178,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     top: 20.0,
                     right: 20.0,
                     child: FloatingActionButton(
-                      onPressed: () {
-                        update();
-                      },
+                      onPressed: !widget.user.updating
+                          ? () {
+                              update();
+                            }
+                          : null,
                       heroTag: 'save-float-btn',
                       mini: true,
-                      backgroundColor: Color(0xFF68BB49),
-                      child: Icon(Icons.save),
+                      backgroundColor: !widget.user.updating
+                          ? Theme.of(context).primaryColor
+                          : Color(0xFF3F4089),
+                      child: !widget.user.updating
+                          ? Icon(Icons.save)
+                          : Padding(
+                              padding: EdgeInsets.all(4),
+                              child: CircularProgressIndicator(),
+                            ),
                     ),
                   ),
                 ],

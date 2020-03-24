@@ -63,11 +63,12 @@ class _TaskScreenState extends State<TaskScreen> {
 
   List<Widget> buildTaskOffers(List<Offer> offers, Offer selectedOffer) {
     List<Widget> offerWidgets = List();
+    print('offers: ' + offers.toString());
     offerWidgets.add(
       ListTile(
         title: Text('Откликнулись:'),
         trailing: Text(
-          '${offers.length} исполнителя(ей)',
+          '${offers != null ? offers.length : 0} исполнителя(ей)',
           style: TextStyle(fontSize: 14),
         ),
         dense: true,
@@ -104,133 +105,137 @@ class _TaskScreenState extends State<TaskScreen> {
             )
           : null,
     ));
-    for (final offer in offers) {
-      offerWidgets.add(ExpansionTile(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    if (offers is List<Offer>) {
+      for (final offer in offers) {
+        offerWidgets.add(ExpansionTile(
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(offer.executor.name),
+              Text(
+                '${offer.price} сум',
+                style: TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+          initiallyExpanded:
+              selectedOffer != null && selectedOffer.id == offer.id,
           children: <Widget>[
-            Text(offer.executor.name),
-            Text(
-              '${offer.price} сум',
-              style: TextStyle(fontSize: 14),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text('Тип оплаты:'),
+                  Text(
+                    offer.paymentType != null
+                        ? offer.paymentType.name
+                        : 'Не выбран',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Text('Комментарий:')),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14),
+              child: Text(offer.comment),
+            ),
+            offer.deletedAt != null
+                ? Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    child: Text('Отказано'),
+                  )
+                : selectedOffer == null
+                    ? ButtonBar(
+                        children: <Widget>[
+                          MaterialButton(
+                            onPressed: () {},
+                            child: Text('Просмотреть профиль'),
+                          ),
+                          RaisedButton(
+                            onPressed: offer.acceptance
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      offer.acceptance = true;
+                                    });
+                                    if ((await updateTask({
+                                      "id": widget.taskId,
+                                      "offer_id": offer.id
+                                    })) is Task) {
+                                      setState(() {
+                                        futureTask =
+                                            getTask({"id": widget.taskId});
+                                      });
+                                    }
+                                    setState(() {
+                                      offer.acceptance = false;
+                                    });
+                                  },
+                            child: offer.acceptance
+                                ? Transform.scale(
+                                    scale: .5,
+                                    child: CircularProgressIndicator())
+                                : Icon(
+                                    Icons.check_box,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                          RaisedButton(
+                            onPressed: offer.deletion
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      offer.deletion = true;
+                                    });
+                                    if (await deleteOffer({"id": offer.id})) {
+                                      setState(() {
+                                        offer.deletedAt = DateTime.now();
+                                      });
+                                    }
+                                    setState(() {
+                                      offer.deletion = false;
+                                    });
+                                  },
+                            color: Colors.black,
+                            child: offer.deletion
+                                ? Transform.scale(
+                                    scale: .5,
+                                    child: CircularProgressIndicator())
+                                : Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                        ],
+                      )
+                    : selectedOffer.id == offer.id
+                        ? Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            child: Text(
+                              'Вы выбрали этого исполнителя',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            ),
+                          )
+                        : Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            child: Text(
+                              'Вы выбрали другого исполнителя',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
           ],
-        ),
-        initiallyExpanded:
-            selectedOffer != null && selectedOffer.id == offer.id,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Тип оплаты:'),
-                Text(
-                  offer.paymentType != null
-                      ? offer.paymentType.name
-                      : 'Не выбран',
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: Text('Комментарий:')),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
-            child: Text(offer.comment),
-          ),
-          offer.deletedAt != null
-              ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  child: Text('Отказано'),
-                )
-              : selectedOffer == null
-                  ? ButtonBar(
-                      children: <Widget>[
-                        MaterialButton(
-                          onPressed: () {},
-                          child: Text('Просмотреть профиль'),
-                        ),
-                        RaisedButton(
-                          onPressed: offer.acceptance
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    offer.acceptance = true;
-                                  });
-                                  if ((await updateTask({
-                                    "id": widget.taskId,
-                                    "offer_id": offer.id
-                                  })) is Task) {
-                                    setState(() {
-                                      futureTask =
-                                          getTask({"id": widget.taskId});
-                                    });
-                                  }
-                                  setState(() {
-                                    offer.acceptance = false;
-                                  });
-                                },
-                          child: offer.acceptance
-                              ? Transform.scale(
-                                  scale: .5, child: CircularProgressIndicator())
-                              : Icon(
-                                  Icons.check_box,
-                                  color: Colors.white,
-                                ),
-                        ),
-                        RaisedButton(
-                          onPressed: offer.deletion
-                              ? null
-                              : () async {
-                                  setState(() {
-                                    offer.deletion = true;
-                                  });
-                                  if (await deleteOffer({"id": offer.id})) {
-                                    setState(() {
-                                      offer.deletedAt = DateTime.now();
-                                    });
-                                  }
-                                  setState(() {
-                                    offer.deletion = false;
-                                  });
-                                },
-                          color: Colors.black,
-                          child: offer.deletion
-                              ? Transform.scale(
-                                  scale: .5, child: CircularProgressIndicator())
-                              : Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                ),
-                        ),
-                      ],
-                    )
-                  : selectedOffer.id == offer.id
-                      ? Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
-                          child: Text(
-                            'Вы выбрали этого исполнителя',
-                            style:
-                                TextStyle(color: Theme.of(context).accentColor),
-                          ),
-                        )
-                      : Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
-                          child: Text(
-                            'Вы выбрали другого исполнителя',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-        ],
-      ));
+        ));
+      }
     }
     return offerWidgets;
   }
@@ -258,15 +263,15 @@ class _TaskScreenState extends State<TaskScreen> {
                 target: LatLng(task.coorLat, task.coorLong),
                 zoom: 10,
               );
-              for (final offer in task.offers) {
-                print(offer.executor);
-                if (offer.executor.id == currentUser.id) {
-                  hasOffered = true;
+              if (task.offers is List<Offer>) {
+                for (final offer in task.offers) {
+                  print(offer.executor);
+                  if (offer.executor.id == currentUser.id) {
+                    hasOffered = true;
+                  }
                 }
               }
-              final ScrollController scrollController = ScrollController();
               return ListView(
-                controller: scrollController,
                 children: <Widget>[
                   Column(
                     children: <Widget>[
@@ -418,9 +423,6 @@ class _TaskScreenState extends State<TaskScreen> {
                               onMapCreated: (GoogleMapController controller) {
                                 _controller.complete(controller);
                               },
-                              onTap: (coors) {
-                                scrollController.dispose();
-                              },
                               gestureRecognizers:
                                   <Factory<OneSequenceGestureRecognizer>>[
                                 new Factory<OneSequenceGestureRecognizer>(
@@ -434,9 +436,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           ),
                         ),
                       ),
-                      currentUser != null &&
-                              currentUser.id == task.user.id &&
-                              task.status.code == 'new'
+                      currentUser != null && currentUser.id == task.user.id
                           ? Card(
                               margin: EdgeInsets.symmetric(
                                   vertical: 4, horizontal: 10),
@@ -453,14 +453,17 @@ class _TaskScreenState extends State<TaskScreen> {
                           ? Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 6),
+                              height: 60,
                               width: MediaQuery.of(context).size.width,
                               child: RaisedButton(
                                 padding: EdgeInsets.all(16),
                                 onPressed: !_isLoading ? _canCreate : null,
-                                child: Text(
-                                  'Подать предложение',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                child: !_isLoading
+                                    ? Text(
+                                        'Подать предложение',
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : CircularProgressIndicator(),
                               ),
                             )
                           : hasOffered
@@ -478,6 +481,21 @@ class _TaskScreenState extends State<TaskScreen> {
                                   ),
                                 )
                               : Container(),
+                      task.status.code == 'executor_selected'
+                          ? Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              width: MediaQuery.of(context).size.width,
+                              child: RaisedButton(
+                                padding: EdgeInsets.all(16),
+                                onPressed: () {},
+                                child: Text(
+                                  'Задание выполнено',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ],

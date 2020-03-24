@@ -80,3 +80,28 @@ Future<Task> updateTask(map) async {
   }
   return null;
 }
+
+Future<Task> createTask(map) async {
+  var token = await getToken();
+  print(map);
+  final response = await http.post(
+    domain + '/tasks/create',
+    headers: {
+      "Authorization": "Bearer $token",
+      "Content-type": "application/json",
+    },
+    body: jsonEncode(map),
+  );
+
+  final jsonTask = await errorHelper(response, createTask, map);
+
+  print(jsonTask);
+  if (jsonTask is Task) {
+    return jsonTask;
+  }
+  if (jsonTask.containsKey('task')) {
+    return Task.fromJson(jsonTask['task']);
+  }
+
+  return null;
+}

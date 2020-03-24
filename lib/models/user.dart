@@ -15,6 +15,7 @@ class User {
   String gender;
   String passport;
   List<Service> services;
+  bool updating = false;
 
   User({
     @required this.id,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prosto/helpers/locale_storage_helper.dart';
 import 'package:prosto/helpers/token.dart';
+import 'package:prosto/helpers/users.dart';
 import 'package:prosto/models/user.dart';
 import 'package:prosto/screens/loading_screen.dart';
 import 'package:prosto/screens/my_wallet_screen.dart';
@@ -14,7 +14,7 @@ class ProstoDrawer extends StatefulWidget {
 }
 
 class _ProstoDrawerState extends State<ProstoDrawer> {
-  Future<User> currentUser = LStorage.getUser();
+  Future<User> currentUser = getLocalCurrentUser();
   @override
   void initState() {
     super.initState();
@@ -256,38 +256,38 @@ class _ProstoDrawerState extends State<ProstoDrawer> {
                     splashColor: Color(0x6668BB49),
                     highlightColor: Color(0x5568BB49),
                   ),
+                  InkWell(
+                    onTap: () async {
+                      await invalidateToken({});
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoadingScreen(),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 10.0,
+                      ),
+                      child: Text(
+                        'Выход',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    splashColor: Color(0x6668BB49),
+                    highlightColor: Color(0x5568BB49),
+                  ),
                 ],
               ),
             ),
-            InkWell(
-              onTap: () async {
-                await invalidateToken({});
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoadingScreen(),
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 20.0,
-                ),
-                child: Text(
-                  'Выход',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              splashColor: Color(0x6668BB49),
-              highlightColor: Color(0x5568BB49),
-            ),
             Container(
               color: Color(0xFF68BB49),
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

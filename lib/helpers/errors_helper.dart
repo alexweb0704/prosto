@@ -45,8 +45,8 @@ Future<bool> refreshToken() async {
     return false;
   }
   print(headers['authorization']);
-  final String newTokenWitBearer = headers["authorization"];
-  final newToken = (newTokenWitBearer.split(' '))[1];
+  final String newTokenWithBearer = headers["authorization"];
+  final String newToken = (newTokenWithBearer.split(' '))[1];
   print("new token: $newToken");
   await LStorage.setItem("token", newToken);
   return true;

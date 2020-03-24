@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prosto/screens/tasks/find/find_task.dart';
 import '../screens/tasks/create/step1.dart';
 import '../widgets/drawer.dart';
+import 'package:connectivity/connectivity.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,6 +10,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var subscription;
+  @override
+  void initState() {
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        Navigator.pushNamed(context, '/no-connection');
+        print('none');
+      }
+      if (result == ConnectivityResult.mobile) {
+        print('mobile');
+      }
+      if (result == ConnectivityResult.wifi) {
+        print('wifi');
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    subscription.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

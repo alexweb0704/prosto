@@ -18,7 +18,7 @@ Future<User> getCurrentUser(map) async {
     headers: {"Authorization": "Bearer $token"},
   );
   final jsonUser = await errorHelper(response, getCurrentUser, {});
-  
+
   if (jsonUser is User) {
     return jsonUser;
   }
@@ -95,6 +95,10 @@ Future<bool> updateUser(map) async {
   );
 
   final jsonData = await errorHelper(response, updateUser, map);
+
+  if (jsonData is bool) {
+    return jsonData;
+  }
 
   if (jsonData == null && jsonData.containsKey('user') == false) {
     return false;
